@@ -95,7 +95,7 @@ In addition, use the environment variables from the next paragraphs to your desi
 ## Find Us
 
 * [GitHub](https://github.com/D3strukt0r/docker-bungeecord)
-* [Quay.io](https://quay.io/repository/your/docker-repository)
+* [Docker Hub](https://hub.docker.com/r/d3strukt0r/bungeecord)
 
 ## Contributing
 
