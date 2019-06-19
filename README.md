@@ -2,8 +2,8 @@
 
 Use the BungeeCord Proxy as a Docker App.
 
-![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/docker-bungeecord.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/docker-bungeecord.svg)
+![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/bungeecord.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/bungeecord.svg)
 
 ## Getting Started
 
