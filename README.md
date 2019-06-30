@@ -25,10 +25,10 @@ To start the server use the command given below. To be able to type commands dir
 
 BungeeCord uses `25577` as a default port, however, you should use `25565`, which is Minecraft's default port (`-p 25565:25577`).
 
-Important to know, is the the `/plugins` and `/config` volumes are mandatory (`-v <host_dir>:/plugins`, `-v <host_dir>:/config`), for this setup. The icon volume is optional if you want to use an icon (`-v <host_dir>:/icon`)
+It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/data`), your data will be saved. If you don't add it, it is impossible to change any config file, or add plugins.
 
 ```shell
-docker run -i -t -p 25565:25577 -v D:\bungeecord_plugins:/plugins -v D:\bungeecord_config:/config d3strukt0r/docker-bungeecord
+docker run -i -t -p 25565:25577 -v D:\bungeecord_data:/data d3strukt0r/docker-bungeecord
 ```
 
 In addition, use the environment variables from the next paragraphs to your desire with e. g. `-e JAVA_MEMORY=1G`.
@@ -69,17 +69,9 @@ In addition, use the environment variables from the next paragraphs to your desi
 
 #### Volumes
 
-*   `/plugins` - (Required)
+*   `/data` - (Optional)
 
-    Put all the `.jar` plugins in here
-
-*   `/config` - (Required)
-
-    Put the `config.yml` in here
-
-*   `/icon` - (Optional)
-
-    Put the `server-icon.png`
+    Here go all data files, like: configs, plugins, logs, icons
 
 #### Useful File Locations
 
