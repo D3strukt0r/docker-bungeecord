@@ -5,7 +5,7 @@ FROM openjdk:latest
 MAINTAINER Manuele Vaccari <manuele.vaccari@gmail.com>
 
 # Volumes to use which stay between updates
-VOLUME ["/plugins", "/config", "/icon"]
+VOLUME ["/data"]
 
 # Set the working directory to /app
 WORKDIR /app

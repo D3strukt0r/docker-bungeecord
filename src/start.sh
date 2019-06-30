@@ -22,48 +22,52 @@ if [[ ! -e $BUNGEECORD_LOCATION ]]; then
     fi
 fi
 
-# Link the plugins folder (required)
-echo "[    ] Linking BungeeCord plugins from the volume /plugins..."
-# Check whether volume is set up
-if [ ! -d /plugins ]; then
-    echo -e "\e[1A[FAIL]"
-    exit 2
-fi
-# Link plugins folder from volume to app
-ln -s /plugins plugins
-if [ $? -eq 0 ]; then
-    echo -e "\e[1A[ \e[32mOK\e[39m ]"
-else
-    echo -e "\e[1A[\e[31mFAIL\e[39m]"
-    exit 2
-fi
+# Link existing data if volume available
+if [ -d /data ]; then
+    # Link plugins folder
+    echo "[    ] Linking plugins/ from the volume"
+    mkdir -p /data/plugins
+    ln -s /data/plugins .
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1A[ \e[32mOK\e[39m ]"
+    else
+        echo -e "\e[1A[\e[31mFAIL\e[39m]"
+    fi
 
-# Link the config (required)
-echo "[    ] Linking config.yml from the volume /config..."
-# Check whether volume is set up
-if [ ! -d /config ]; then
-    echo -e "\e[1A[\e[31mFAIL\e[39m]"
-    exit 2
-fi
-# Check whether config.yml exists
-if [ ! -f /config/config.yml ]; then
-    echo -e "\e[1A[\e[31mFAIL\e[39m]"
-    exit 2
-fi
-# Link config.yml from volume to app
-ln -s /config/config.yml config.yml
-if [ $? -eq 0 ]; then
-    echo -e "\e[1A[ \e[32mOK\e[39m ]"
-else
-    echo -e "\e[1A[\e[31mFAIL\e[39m]"
-    exit 2
-fi
+    # Link config.yml
+    echo "[    ] Linking config.yml from the volume"
+    touch /data/config.yml
+    ln -s /data/config.yml .
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1A[ \e[32mOK\e[39m ]"
+    else
+        echo -e "\e[1A[\e[31mFAIL\e[39m]"
+    fi
 
-# Link the server icon (optional)
-echo "[    ] Linking server-icon.png from the volume /icon..."
-if [ -d /icon ]; then
-    if [ -f /icon/server-icon.png ]; then
-        ln -s /icon/server-icon.png server-icon.png
+    # Link locations.yml
+    echo "[    ] Linking locations.yml from the volume"
+    touch /data/locations.yml
+    ln -s /data/locations.yml .
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1A[ \e[32mOK\e[39m ]"
+    else
+        echo -e "\e[1A[\e[31mFAIL\e[39m]"
+    fi
+
+    # Link proxy.log.*
+    echo "[    ] Linking proxy.log.* from the volume"
+    touch /data/proxy.log.0
+    ln -s /data/proxy.log.* .
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1A[ \e[32mOK\e[39m ]"
+    else
+        echo -e "\e[1A[\e[31mFAIL\e[39m]"
+    fi
+
+    # Link server-icon.png
+    echo "[    ] Linking server-icon.png from the volume"
+    if [ -f /data/server-icon.png ]; then
+        ln -s /data/server-icon.png .
         if [ $? -eq 0 ]; then
             echo -e "\e[1A[ \e[32mOK\e[39m ]"
         else
