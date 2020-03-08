@@ -19,5 +19,16 @@ jobs:
 
 before_install:
   - chmod +x docker_push.sh
-script:
-  - ./docker_push.sh
+
+deploy:
+  # "latest" build
+  - provider: script
+    script: bash docker_push.sh
+    on:
+      branch: master
+
+  # "nightly" build
+  - provider: script
+    script: bash docker_push.sh
+    on:
+      branch: develop
