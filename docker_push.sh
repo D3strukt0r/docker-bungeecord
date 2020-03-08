@@ -1,26 +1,24 @@
 #!/bin/bash
 
-# Login to make sure we have access to private dockers
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+REPO="$DOCKER_USERNAME"/bungeecord
 
-# Build
-docker build -t bungeecord .
-
-# Upload
-echo "Choosing tag to upload to... (Branch: '$TRAVIS_BRANCH' | Tag: '$TRAVIS_TAG')"
 if [ "$TRAVIS_BRANCH" == "master" ]; then
-    DOCKER_PUSH_TAG="latest"
+    if [ "$BUNGEECORD_JOB_ID" != "lastStableBuild"]; then
+        # Upload to "latest"
+        docker tag bungeecord $REPO:latest
+        docker push $REPO:latest
+    else
+        # Or to any given build number
+        docker tag bungeecord $REPO:"$BUNGEECORD_JOB_ID"
+        docker push $REPO:"$BUNGEECORD_JOB_ID"
+    fi
 elif [ "$TRAVIS_BRANCH" == "develop" ]; then
-    DOCKER_PUSH_TAG="nightly"
+    if [ "$BUNGEECORD_JOB_ID" != "lastStableBuild"]; then
+        # In the "develop" branch only upload to "nightly"
+        docker tag bungeecord $REPO:nightly
+        docker push $REPO:nightly
+    fi
 else
-    echo "Skipping deployment because it's neither master, develop or a versioned build"
-    exit 1;
-fi
-
-docker tag bungeecord "$DOCKER_USERNAME"/bungeecord:"$DOCKER_PUSH_TAG"
-docker push "$DOCKER_USERNAME"/bungeecord:"$DOCKER_PUSH_TAG"
-
-if [ "$BUNGEECORD_JOB_ID" != "lastStableBuild"]; then
-    docker tag bungeecord "$DOCKER_USERNAME"/bungeecord:"$BUNGEECORD_JOB_ID"
-    docker push "$DOCKER_USERNAME"/bungeecord:"$BUNGEECORD_JOB_ID"
+    echo "Skipping deployment because it's neither master nor develop"
+    exit 0;
 fi

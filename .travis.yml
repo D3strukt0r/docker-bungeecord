@@ -18,7 +18,14 @@ jobs:
     - env: BUNGEECORD_JOB_ID=251 # 1.4.7
 
 before_install:
+  # Make file executable (Not by default)
   - chmod +x docker_push.sh
 
+  # Login to make sure we have access to private dockers
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
 script:
+  - docker build -t bungeecord .
+
+after_success:
   - ./docker_push.sh
