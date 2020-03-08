@@ -1,0 +1,48 @@
+os: linux
+dist: trusty
+language: java
+jdk:
+  - oraclejdk8
+services:
+  - docker
+
+notifications:
+  email: false
+
+jobs:
+  include:
+    - env: BUNGEECORD_VERSION=lastStableBuild
+    - env: BUNGEECORD_VERSION=1119 # 1.7.10
+    - env: BUNGEECORD_VERSION=701 # 1.6.4
+    - env: BUNGEECORD_VERSION=666 # 1.6.2
+    - env: BUNGEECORD_VERSION=548 # 1.5.2
+    - env: BUNGEECORD_VERSION=386 # 1.5.0
+    - env: BUNGEECORD_VERSION=251 # 1.4.7
+
+before_install:
+  # Make file executable (because it's not by default)
+  - chmod +x ./src/docker_push.sh
+
+  # Login to Docker Hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+script:
+  # Build the Docker Image
+  - docker build -t bungeecord .
+
+# Instead of using the "deploy" phase and a script file
+after_success:
+  - |
+    echo "Choosing tag to upload to... (Branch: '$TRAVIS_BRANCH' | Tag: '$TRAVIS_TAG')"
+    if [ "$TRAVIS_BRANCH" == "master" ]; then
+      DOCKER_PUSH_TAG="latest"
+    elif [ "$TRAVIS_BRANCH" == "develop" ]; then
+      DOCKER_PUSH_TAG="nightly"
+    elif [ "$TRAVIS_TAG" != "" ]; then
+      DOCKER_PUSH_TAG=$TRAVIS_TAG
+    else
+      echo "Skipping deployment because it's neither master, develop or a versioned build"
+      exit 1;
+    fi
+  - docker tag bungeecord "$DOCKER_USERNAME"/bungeecord:"$DOCKER_PUSH_TAG"
+  - docker push "$DOCKER_USERNAME"/bungeecord:"$DOCKER_PUSH_TAG"
