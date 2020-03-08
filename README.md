@@ -14,9 +14,9 @@ These instructions will cover usage information and for the docker container
 
 In order to run this container you'll need docker installed.
 
-*   [Windows](https://docs.docker.com/windows/started)
-*   [OS X](https://docs.docker.com/mac/started/)
-*   [Linux](https://docs.docker.com/linux/started/)
+* [Windows](https://docs.docker.com/windows/started)
+* [OS X](https://docs.docker.com/mac/started/)
+* [Linux](https://docs.docker.com/linux/started/)
 
 ### Usage
 
@@ -36,7 +36,7 @@ BungeeCord uses `25577` as a default port, however, you should use `25565`, whic
 ##### `-v $(pwd)/data:/data`
 It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/data`), your data will be saved. If you don't add it, it is impossible to change any config file, or add plugins.
 
-##### `d3strukt0r/docker-bungeecord`
+##### `d3strukt0r/bungeecord`
 This is the repository on Docker Hub.
 
 ##### `-Xms512M -Xmx512M`
@@ -91,7 +91,7 @@ And then use `docker-compose up` or `docker-compose up -d` for detached. Again u
 
 * `/data` - (Optional)
 
-    Here go all data files, like: configs, plugins, logs, icons
+Here go all data files, like: configs, plugins, logs, icons
 
 ## Built With
 
@@ -103,8 +103,8 @@ And then use `docker-compose up` or `docker-compose up -d` for detached. Again u
 
 ## Find Us
 
-*   [GitHub](https://github.com/D3strukt0r/docker-bungeecord)
-*   [Docker Hub](https://hub.docker.com/r/d3strukt0r/bungeecord)
+* [GitHub](https://github.com/D3strukt0r/docker-bungeecord)
+* [Docker Hub](https://hub.docker.com/r/d3strukt0r/bungeecord)
 
 ## Contributing
 
