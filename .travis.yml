@@ -11,13 +11,13 @@ notifications:
 
 jobs:
   include:
-    - env: BUNGEECORD_VERSION=lastStableBuild
-    - env: BUNGEECORD_VERSION=1119 # 1.7.10
-    - env: BUNGEECORD_VERSION=701 # 1.6.4
-    - env: BUNGEECORD_VERSION=666 # 1.6.2
-    - env: BUNGEECORD_VERSION=548 # 1.5.2
-    - env: BUNGEECORD_VERSION=386 # 1.5.0
-    - env: BUNGEECORD_VERSION=251 # 1.4.7
+    - env: BUNGEECORD_JOB_ID=lastStableBuild
+    - env: BUNGEECORD_JOB_ID=1119 # 1.7.10
+    - env: BUNGEECORD_JOB_ID=701 # 1.6.4
+    - env: BUNGEECORD_JOB_ID=666 # 1.6.2
+    - env: BUNGEECORD_JOB_ID=548 # 1.5.2
+    - env: BUNGEECORD_JOB_ID=386 # 1.5.0
+    - env: BUNGEECORD_JOB_ID=251 # 1.4.7
 
 before_install:
   # Make file executable (because it's not by default)
