@@ -23,7 +23,7 @@ before_install:
 
 script:
   # Build the Docker Image
-  - docker build -t bungeecord .
+  - docker build --build-arg $BUNGEECORD_JOB_ID -t bungeecord .
 
 # Instead of using the "deploy" phase and a script file
 after_success:
