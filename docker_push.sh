@@ -13,7 +13,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
         docker push "$REPO":"$BUNGEECORD_JOB_ID"
     fi
 elif [ "$TRAVIS_BRANCH" == "develop" ]; then
-    if [ "$BUNGEECORD_JOB_ID" != "lastStableBuild" ]; then
+    if [ "$BUNGEECORD_JOB_ID" == "lastStableBuild" ]; then
         # In the "develop" branch only upload to "nightly"
         docker tag bungeecord "$REPO":nightly
         docker push "$REPO":nightly
