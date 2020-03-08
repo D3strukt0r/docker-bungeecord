@@ -20,22 +20,72 @@ In order to run this container you'll need docker installed.
 
 ### Usage
 
-#### Container Parameters
+#### Docker CLI
 
 To start the server use the following command:
 ```shell script
-docker run -i -t -p 25565:25577 -v $(pwd)/data:/data d3strukt0r/docker-bungeecord -Xms512M -Xmx512M
+docker run -i -t -p 25565:25577 -v $(pwd)/data:/data d3strukt0r/bungeecord -Xms512M -Xmx512M
 ```
 
-`-i -t`: To be able to type commands directly in your terminal `-i -t` or `-it`. However, this won't allow you detach from it with `Ctrl + C`. To start it detached from the beginning use `-d`
+##### `-i -t`
+To be able to type commands directly in your terminal `-i -t` or `-it`. However, this won't allow you detach from it with `Ctrl + C`. To start it detached from the beginning use `-d`
 
-`-p 25565:25577`: BungeeCord uses `25577` as a default port, however, you should use `25565`, which is Minecraft's default port (`-p 25565:25577`).
+##### `-p 25565:25577`
+BungeeCord uses `25577` as a default port, however, you should use `25565`, which is Minecraft's default port (`-p 25565:25577`).
 
-`-v $(pwd)/data:/data`: It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/data`), your data will be saved. If you don't add it, it is impossible to change any config file, or add plugins.
+##### `-v $(pwd)/data:/data`
+It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/data`), your data will be saved. If you don't add it, it is impossible to change any config file, or add plugins.
 
-`d3strukt0r/docker-bungeecord`: This is the repository on Docker Hub.
+##### `d3strukt0r/docker-bungeecord`
+This is the repository on Docker Hub.
 
-`-Xms512M -Xmx512M`: To add arguments, like memory limit, simply add them after the repo inside the command. Or when using a `docker-compose.yml` file, put it inside `command: ...`.
+##### `-Xms512M -Xmx512M`
+To add arguments, like memory limit, simply add them after the repo inside the command. Or when using a `docker-compose.yml` file, put it inside `command: ...`.
+
+```shell script
+docker run -d -p 25565:25577 -v $(pwd)/data:/data --name bungeecord d3strukt0r/bungeecord -Xms512M -Xmx512M
+```
+
+##### `-d`
+Run detached (in the background)
+
+##### `--name bungeecord`
+Give this container a name for easier reference later on.
+
+#### Docker CLI (with `screen`)
+
+However there is no way to attach back to it, so instead use a library in linux which is known as "screen":
+
+```shell script
+screen -d -m -S "bungeecord" docker run -i -t -p 25565:25577 -v $(pwd)/data:/data d3strukt0r/bungeecord -Xms512M -Xmx512M
+```
+
+##### `screen -d -m -S "bungeecord"`
+Creates like a window in the terminal which you can easily leave and enter.
+
+You can detach from the window using `CTRL` + `a` and then `d`.
+
+To reattach first find your screen with `screen -r`. And if you gave it a name, you can skip this.
+
+Then enter `screen -r bungeecord` or `screen -r 00000.pts-0.office` (or whatever was shown with `screen -r`)
+
+#### Docker Compose
+
+Example `docker-compose.yml` file:
+```yml
+version: '2'
+
+services:
+  bungeecord:
+    image: d3strukt0r/bungeecord
+    command: -Xms512M -Xmx512M
+    ports:
+      - 25565:25577
+    volumes:
+      - ./data:/data
+```
+
+And then use `docker-compose up` or `docker-compose up -d` for detached. Again using the experience with linux's `screen` library
 
 #### Volumes
 
