@@ -24,7 +24,7 @@ In order to run this container you'll need docker installed.
 
 To start the server use the following command:
 ```shell script
-docker run -i -t -p 25565:25577 -v $(pwd)/data:/data d3strukt0r/bungeecord -Xms512M -Xmx512M
+docker run -i -t -p 25565:25577 -v $(pwd)/data:/data -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
 ```
 
 ##### `-i -t`
@@ -43,7 +43,7 @@ This is the repository on Docker Hub.
 To add arguments, like memory limit, simply add them after the repo inside the command. Or when using a `docker-compose.yml` file, put it inside `command: ...`.
 
 ```shell script
-docker run -d -p 25565:25577 -v $(pwd)/data:/data --name bungeecord d3strukt0r/bungeecord -Xms512M -Xmx512M
+docker run -d -p 25565:25577 -v $(pwd)/data:/data --name bungeecord -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
 ```
 
 ##### `-d`
@@ -57,7 +57,7 @@ Give this container a name for easier reference later on.
 However there is no way to attach back to it, so instead use a library in linux which is known as "screen":
 
 ```shell script
-screen -d -m -S "bungeecord" docker run -i -t -p 25565:25577 -v $(pwd)/data:/data d3strukt0r/bungeecord -Xms512M -Xmx512M
+screen -d -m -S "bungeecord" docker run -i -t -p 25565:25577 -v $(pwd)/data:/data -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
 ```
 
 ##### `screen -d -m -S "bungeecord"`
@@ -78,11 +78,13 @@ version: '2'
 services:
   bungeecord:
     image: d3strukt0r/bungeecord
-    command: -Xms512M -Xmx512M
     ports:
       - 25565:25577
     volumes:
       - ./data:/data
+    environment:
+      - JAVA_BASE_MEMORY=512M
+      - JAVA_MAX_MEMORY=1G
 ```
 
 And then use `docker-compose up` or `docker-compose up -d` for detached. Again using the experience with linux's `screen` library
