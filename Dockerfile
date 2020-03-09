@@ -22,7 +22,12 @@ FROM openjdk:8-jre-slim
 COPY --from=build /bungeecord.jar /app/
 
 VOLUME ["/data"]
+
+ENV JAVA_BASE_MEMORY=512M
+ENV JAVA_MAX_MEMORY=512M
+
 EXPOSE 25577
 
 WORKDIR /data
-ENTRYPOINT ["java", "-jar", "../app/bungeecord.jar"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
