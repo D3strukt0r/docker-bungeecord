@@ -39,7 +39,7 @@ It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/da
 ##### `d3strukt0r/bungeecord`
 This is the repository on Docker Hub.
 
-##### `-Xms512M -Xmx512M`
+##### `-e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G`
 To add arguments, like memory limit, simply add them after the repo inside the command. Or when using a `docker-compose.yml` file, put it inside `command: ...`.
 
 ```shell script
