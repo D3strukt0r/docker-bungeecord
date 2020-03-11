@@ -2,7 +2,7 @@
 
 Use the BungeeCord Proxy as a Docker App.
 
-Docker | Travis (master) | Travis (develop)
+[Docker](https://hub.docker.com/repository/docker/d3strukt0r/bungeecord) | [Travis (master)](https://travis-ci.com/github/D3strukt0r/docker-bungeecord) | [Travis (develop)](https://travis-ci.com/github/D3strukt0r/docker-bungeecord)
 --- | --- | ---
 ![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/bungeecord.svg)<br />![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/bungeecord.svg) | ![Travis (.com) branch](https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/master) | ![Travis (.com) branch](https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/develop)
 
