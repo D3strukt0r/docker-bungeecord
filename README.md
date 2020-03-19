@@ -2,66 +2,84 @@
 
 Use the BungeeCord Proxy as a Docker App.
 
-[Docker](https://hub.docker.com/repository/docker/d3strukt0r/bungeecord) | [Travis (master)](https://travis-ci.com/github/D3strukt0r/docker-bungeecord) | [Travis (develop)](https://travis-ci.com/github/D3strukt0r/docker-bungeecord)
---- | --- | ---
-![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/bungeecord.svg)<br />![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/bungeecord.svg) | ![Travis (.com) branch](https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/master) | ![Travis (.com) branch](https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/develop)
+**Project**
+[Docker][docker] | [License][license]
+--- | ---
+![Docker Stars][docker-stars-icon]<br />![Docker Pulls][docker-pulls-icon] | ![License][license-icon]
+
+**master**-branch (alias stable, latest)
+[Travis][travis] | [Docs][rtfd]
+--- | ---
+![Build status][travis-master-icon] | ![Docs build status][rtfd-master-icon]
+
+**develop**-branch (alias nightly)
+
+[Travis][travis] | [Docs][rtfd]
+--- | ---
+![Build status][travis-develop-icon] | ![Docs build status][rtfd-develop-icon]
+
+[license]: https://github.com/D3strukt0r/docker-bungeecord/blob/master/LICENSE.txt
+[docker]: https://hub.docker.com/repository/docker/d3strukt0r/bungeecord
+[travis]: https://travis-ci.com/github/D3strukt0r/docker-bungeecord
+[docker-stars-icon]: https://img.shields.io/docker/stars/d3strukt0r/bungeecord.svg
+[rtfd]: https://docker-bungeecord-docs.manuele-vaccari.ch/
+
+[license-icon]: https://img.shields.io/github/license/d3strukt0r/docker-bungeecord
+[docker-pulls-icon]: https://img.shields.io/docker/pulls/d3strukt0r/bungeecord.svg
+[travis-master-icon]: https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/master
+[travis-develop-icon]: https://img.shields.io/travis/com/D3strukt0r/docker-bungeecord/develop
+[rtfd-master-icon]: https://img.shields.io/readthedocs/docker-bungeecord/master
+[rtfd-develop-icon]: https://img.shields.io/readthedocs/docker-bungeecord/develop
 
 ## Getting Started
 
 These instructions will cover usage information and for the docker container
 
+For more in-depth docs, please visit the [Docs](https://docker-bungeecord-docs.manuele-vaccari.ch) page
+
 ### Prerequisities
 
 In order to run this container you'll need docker installed.
 
-* [Windows](https://docs.docker.com/windows/started)
-* [OS X](https://docs.docker.com/mac/started/)
-* [Linux](https://docs.docker.com/linux/started/)
+* [Windows](https://docs.docker.com/docker-for-windows/install/)
+* [OS X](https://docs.docker.com/docker-for-mac/install/)
+* [Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
 ### Usage
 
 #### Docker CLI
 
-To start the server use the following command:
 ```shell script
-docker run -i -t -p 25565:25577 -v $(pwd)/data:/data -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
+docker run -it \
+           -p 25565:25577 \
+           -v $(pwd)/data:/data \
+           -e JAVA_MAX_MEMORY=1G \
+           d3strukt0r/bungeecord
 ```
 
-##### `-i -t`
-To be able to type commands directly in your terminal `-i -t` or `-it`. However, this won't allow you detach from it with `Ctrl + C`. To start it detached from the beginning use `-d`
-
-##### `-p 25565:25577`
-BungeeCord uses `25577` as a default port, however, you should use `25565`, which is Minecraft's default port (`-p 25565:25577`).
-
-##### `-v $(pwd)/data:/data`
-It is not necessary to add any volumes, but if you do add it (`-v <host_dir>:/data`), your data will be saved. If you don't add it, it is impossible to change any config file, or add plugins.
-
-##### `d3strukt0r/bungeecord`
-This is the repository on Docker Hub.
-
-##### `-e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G`
-To add arguments, like memory limit, simply add them after the repo inside the command. Or when using a `docker-compose.yml` file, put it inside `command: ...`.
+#### Docker CLI (detached)
 
 ```shell script
-docker run -d -p 25565:25577 -v $(pwd)/data:/data --name bungeecord -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
+docker run -d \
+           -p 25565:25577 \
+           -v $(pwd)/data:/data \
+           -e JAVA_MAX_MEMORY=1G \
+           --name spigot \
+           d3strukt0r/bungeecord
 ```
 
-##### `-d`
-Run detached (in the background)
-
-##### `--name bungeecord`
-Give this container a name for easier reference later on.
+However there is no way to attach back to it, so instead use a library in linux which is known as "screen" and shown in the next section.
 
 #### Docker CLI (with `screen`)
 
-However there is no way to attach back to it, so instead use a library in linux which is known as "screen":
-
 ```shell script
-screen -d -m -S "bungeecord" docker run -i -t -p 25565:25577 -v $(pwd)/data:/data -e JAVA_BASE_MEMORY=512M -e JAVA_MAX_MEMORY=1G d3strukt0r/bungeecord
+screen -d -m -S "spigot" \
+  docker run -it \
+             -p 25565:25577 \
+             -v $(pwd)/data:/data \
+             -e JAVA_MAX_MEMORY=1G \
+             d3strukt0r/bungeecord
 ```
-
-##### `screen -d -m -S "bungeecord"`
-Creates like a window in the terminal which you can easily leave and enter.
 
 You can detach from the window using `CTRL` + `a` and then `d`.
 
@@ -89,15 +107,8 @@ services:
 
 And then use `docker-compose up` or `docker-compose up -d` for detached. Again using the experience with linux's `screen` library
 
-#### Volumes
-
-* `/data` - (Optional)
-
-Here go all data files, like: configs, plugins, logs, icons
-
 ## Built With
 
-* [Java](https://www.java.com/de/) - Programming Language
 * [OpenJDK](https://hub.docker.com/_/openjdk) - The Java conatainer in Docker
 * [BungeeCord](https://ci.md-5.net/job/BungeeCord/) - The main software
 * [Travis CI](https://travis-ci.com/) - Automatic CI (Testing) / CD (Deployment)
@@ -114,8 +125,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
-[tags on this repository](https://github.com/D3strukt0r/docker-bungeecord/tags).
+There is no versioning in this project. Only the develop for nightly builds, and the master branch which builds latest and all minecraft versions.
 
 ## Authors
 
