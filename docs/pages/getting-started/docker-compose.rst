@@ -23,8 +23,6 @@ Create a file called :code:`docker-compose.yml` under e. g. :code:`/opt/mc-serve
 
       lobby:
         image: d3strukt0r/spigot
-        ports:
-          - 25565:25565
         volumes:
           - ./data:/data
         environment:
@@ -32,8 +30,9 @@ Create a file called :code:`docker-compose.yml` under e. g. :code:`/opt/mc-serve
           - EULA=true
 
 To be able to access the minecraft servers, you need to set the correct address in your
-:code:`config.yml`. The address basically is the name of the container. With the example above
-this would for example look like:
+:code:`config.yml`. The address basically is the name of the container. The port is the one that
+is configured under :code:`server.properties` inside Spigot (by default :code:`25565`). With the
+example above, this would for example look like:
 
 .. code-block:: yaml
 
