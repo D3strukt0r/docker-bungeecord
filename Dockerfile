@@ -22,6 +22,9 @@ FROM openjdk:8-jre-slim
 
 COPY --from=build /bungeecord.jar /app/
 
+COPY src/bungeecord-console.sh /usr/local/bin/console
+RUN chmod 755 /usr/local/bin/console
+
 COPY src/docker-entrypoint.sh /usr/local/bin/
 RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
 
