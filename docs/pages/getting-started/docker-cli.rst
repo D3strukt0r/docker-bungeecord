@@ -5,6 +5,19 @@
 Using Docker
 ==========================
 
+Configuring
+==========================
+
+To be able to access BungeeCord, set all :code:`listeners` to :code:`host: 0.0.0.0:<xxxxx>` and
+replace the x's with your port. Example:
+
+.. code-block:: yaml
+
+    listeners:
+    - ...
+      host: 0.0.0.0:25577
+      ...
+
 Starting the server
 ==========================
 

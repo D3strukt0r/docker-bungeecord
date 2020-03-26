@@ -21,6 +21,28 @@ Create a file called :code:`docker-compose.yml` under e. g. :code:`/opt/mc-serve
         environment:
           - JAVA_MAX_MEMORY=1G
 
+      lobby:
+        image: d3strukt0r/spigot
+        ports:
+          - 25565:25565
+        volumes:
+          - ./data:/data
+        environment:
+          - JAVA_MAX_MEMORY=1G
+          - EULA=true
+
+To be able to access the minecraft servers, you need to set the correct address in your
+:code:`config.yml`. The address basically is the name of the container. With the example above
+this would for example look like:
+
+.. code-block:: yaml
+
+    servers:
+      lobby:
+        motd: '&1Lobby'
+        address: spigot:25565
+        restricted: false
+
 Starting the server
 ==========================
 
