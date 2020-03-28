@@ -18,15 +18,32 @@ RUN curl -o /bungeecord.jar -fL ${BUNGEECORD_URL}
 # Final Container
 # -------
 
-FROM openjdk:8-jre-slim
+FROM alpine:latest
 
 COPY --from=build /bungeecord.jar /app/
+COPY src/*.sh /usr/local/bin/
 
-COPY src/bungeecord-console.sh /usr/local/bin/console
-RUN chmod 755 /usr/local/bin/console
-
-COPY src/docker-entrypoint.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+RUN \
+apk add \
+\
+# Terminal
+bash \
+# Java environment for Spigot
+openjdk8-jre \
+# Required for yq and yaml_cli (runs on Python)
+python3 py3-pip python py-pip \
+# Required to download yaml_cli
+git \
+# Required by yq
+jq && \
+# yq
+pip3 install yq && \
+# yaml_cli
+pip install git+https://github.com/Gallore/yaml_cli && \
+# Remove .sh for easier usage (https://stackoverflow.com/questions/7450818/rename-all-files-in-directory-from-filename-h-to-filename-half)
+for file in /usr/local/bin/*.sh; do mv "$file" "${file/.sh/}"; done && \
+# Add execution permissions (not by default)
+chmod 755 /usr/local/bin/*
 
 VOLUME ["/data"]
 
