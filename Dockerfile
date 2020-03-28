@@ -31,4 +31,4 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
 VOLUME ["/data"]
 
 WORKDIR /data
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["entrypoint"]
