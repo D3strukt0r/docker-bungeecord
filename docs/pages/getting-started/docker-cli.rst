@@ -49,10 +49,10 @@ Start detached. Or leave out to watch the logs. You can then leave using :code:`
    workaround for this. To leave from the terminal, and let it run in the background click
    :code:`CTRL + P + Q` (lift from :code:`P` and click :code:`Q` while still holding :code:`CTRL`)
 
--p 25565:25565
+-p 25565:25577
 --------------------------
 This opens the internal port (inside the container) to the outer worlds. You can open as many
-ports as you want. This would maybe look like :bash:`-p 25565:25565 -p 8192:8192`.
+ports as you want. This would maybe look like :bash:`-p 25565:25577 -p 8192:8192`.
 
 -v $(pwd)/\data:/data
 --------------------------
