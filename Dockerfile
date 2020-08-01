@@ -18,7 +18,7 @@ RUN curl -o /bungeecord.jar -fL ${BUNGEECORD_URL}
 # Final Container
 # -------
 
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
 
 COPY --from=build /bungeecord.jar /app/
 
