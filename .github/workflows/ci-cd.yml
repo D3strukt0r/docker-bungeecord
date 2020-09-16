@@ -18,61 +18,95 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version of BungeeCord"
+        description: "BungeeCord Job ID ('all', specific version)"
         required: true
-        default: "latest"
+        default: "lastStableBuild"
 
 jobs:
+  # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#tojson
+  create-matrix:
+    runs-on: ubuntu-latest
+
+    name: Create Matrix
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+      - name: Create Matrix
+        id: set-matrix
+        run: |
+          default_versions=(
+              1119 # 1.7.10
+              701 # 1.6.4
+              666 # 1.6.2
+              548 # 1.5.2
+              386 # 1.5.0
+              251 # 1.4.7
+          )
+
+          if [ "${{ github.event_name }}" == 'push' ] && [ "${{ github.ref }}" == 'refs/tags/master' ]; then
+              versions=$default_versions
+              versions+=('lastStableBuild')
+          elif [ "${{ github.event_name }}" == 'push' ] && [ "${{ github.ref }}" == 'refs/tags/develop' ]; then
+              versions=lastStableBuild
+          elif [ "${{ github.event_name }}" == 'workflow_dispatch' ]; then
+              versions='${{ github.event.inputs.version }}'
+          else
+              exit 1
+          fi
+
+          versions_json=$(
+              printf '%s\n' "${versions[@]}" |
+              jq --raw-input . |
+              jq --compact-output --slurp '{bungeecord:.}'
+          )
+          echo "::set-output name=matrix::$versions_json"
+
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
+    needs: create-matrix
+
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix) }}
+
+    name: Test BungeeCord ${{ matrix.bungeecord }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set variables
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Figure out correct MC version
-          BUNGEECORD_JOB_ID=lastStableBuild
-
-          if [ "$VERSION" != "master" ] && [ "$VERSION" != "develop" ]; then
-              BUNGEECORD_JOB_ID=$VERSION
-          fi
-
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.version }}" != "latest" ]; then
-              BUNGEECORD_JOB_ID=${{ github.event.inputs.version }}
-          fi
-
-          echo "VERSION=$VERSION"
-          echo "BUNGEECORD_JOB_ID=$BUNGEECORD_JOB_ID"
-          echo "::set-env name=BUNGEECORD_JOB_ID::$BUNGEECORD_JOB_ID"
+      - uses: actions/checkout@v2
 
       - name: Run tests
         run: |
           if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
+              docker-compose --file docker-compose.test.yml build
+              docker-compose --file docker-compose.test.yml run sut
           else
-            docker build . --file Dockerfile --build-arg "BUNGEECORD_JOB_ID=$BUNGEECORD_JOB_ID"
+              is_int_regex='^[0-9]+$'
+              if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680)) ; then
+                  docker build . --file Dockerfile --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
+              else
+                  docker build . --file Dockerfile --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
+              fi
           fi
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
     # Ensure test job passes before pushing image.
-    # needs: test
+    needs: test
 
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix) }}
+
+    name: Push BungeeCord ${{ matrix.bungeecord }}
 
     steps:
       - name: Checkout code
@@ -80,54 +114,33 @@ jobs:
 
       - name: Set variables
         run: |
-          IMAGE_ID=${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME
-
           # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          echo "::set-env name=IMAGE_ID::$(echo "${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME" | tr '[A-Z]' '[a-z]')"
 
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [ "$VERSION" = 'master' ] && [ '${{ matrix.bungeecord }}' = 'lastStableBuild' ] && VERSION=latest
+          [ "$VERSION" = 'develop' ] && [ '${{ matrix.bungeecord }}' = 'lastStableBuild' ] && VERSION=nightly
+          [ '${{ matrix.bungeecord }}' != 'lastStableBuild' ] && VERSION='${{ matrix.bungeecord }}'
 
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
-          # Figure out correct BungeeCord version
-          BUNGEECORD_JOB_ID=lastStableBuild
-
-          if [ "$VERSION" == "master" ]; then
-              DOCKER_VERSION=latest
-          elif [ "$VERSION" == "develop" ]; then
-              DOCKER_VERSION=nightly
-          else
-              SPIGOT_VERSION=$VERSION
-              DOCKER_VERSION=$VERSION
-          fi
-
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.version }}" == "latest" ]; then
-              if [ "$VERSION" == "master" ]; then
-                  DOCKER_VERSION=latest
-              elif [ "$VERSION" == "develop" ]; then
-                  DOCKER_VERSION=nightly
-              fi
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-              BUNGEECORD_JOB_ID=${{ github.event.inputs.version }}
-              DOCKER_VERSION=${{ github.event.inputs.version }}
-          fi
-
-          echo "IMAGE_ID=$IMAGE_ID"
-          echo "::set-env name=IMAGE_ID::$IMAGE_ID"
-          echo "BUNGEECORD_JOB_ID=$BUNGEECORD_JOB_ID"
-          echo "::set-env name=BUNGEECORD_JOB_ID::$BUNGEECORD_JOB_ID"
-          echo "DOCKER_VERSION=$DOCKER_VERSION"
-          echo "::set-env name=DOCKER_VERSION::$DOCKER_VERSION"
+          echo "::set-env name=VERSION::$VERSION"
 
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=$BUNGEECORD_JOB_ID"
+        run: |
+          is_int_regex='^[0-9]+$'
+          if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680)) ; then
+              docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
+          else
+              docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
+          fi
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push image to Docker Hub
         run: |
-          docker tag $IMAGE_NAME $IMAGE_ID:$DOCKER_VERSION
-          docker push $IMAGE_ID:$DOCKER_VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
