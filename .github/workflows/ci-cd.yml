@@ -45,12 +45,11 @@ jobs:
               251 # 1.4.7
           )
 
-          if [ "${{ github.event_name }}" == 'push' ] && [ "${{ github.ref }}" == 'refs/tags/master' ]; then
-              versions=$default_versions
-              versions+=('lastStableBuild')
-          elif [ "${{ github.event_name }}" == 'push' ] && [ "${{ github.ref }}" == 'refs/tags/develop' ]; then
+          if [ '${{ github.event_name }}' == 'push' ] && [ '${{ github.ref }}' == 'refs/heads/master' ]; then
+              versions=("${default_versions[@]}" 'lastStableBuild')
+          elif [ '${{ github.event_name }}' == 'push' ] && [ '${{ github.ref }}' == 'refs/heads/develop' ]; then
               versions=lastStableBuild
-          elif [ "${{ github.event_name }}" == 'workflow_dispatch' ]; then
+          elif [ '${{ github.event_name }}' == 'workflow_dispatch' ]; then
               versions='${{ github.event.inputs.version }}'
           else
               exit 1
@@ -97,7 +96,7 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/
   push:
     # Ensure test job passes before pushing image.
-    needs: test
+    needs: [create-matrix, test]
 
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
