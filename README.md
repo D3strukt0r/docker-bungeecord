@@ -7,7 +7,6 @@ Project
 [![License](https://img.shields.io/github/license/d3strukt0r/docker-bungeecord)][license]
 [![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/bungeecord.svg)][docker]
 [![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/bungeecord.svg)][docker]
-[![GH Action CI/CD](https://github.com/D3strukt0r/docker-bungeecord/workflows/Update%20versions/badge.svg)][gh-action]
 
 master-branch (alias stable, latest)
 

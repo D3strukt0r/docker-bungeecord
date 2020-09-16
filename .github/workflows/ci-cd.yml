@@ -10,8 +10,8 @@ on:
       - develop
     paths:
       - .github/workflows/ci-cd.yml
-      - 'docker/**'
-      - '**/Dockerfile'
+      - "docker/**"
+      - "**/Dockerfile"
 
   pull_request:
 
@@ -84,8 +84,9 @@ jobs:
               docker-compose --file docker-compose.test.yml build
               docker-compose --file docker-compose.test.yml run sut
           else
+              # Builds before 680 had a different URL
               is_int_regex='^[0-9]+$'
-              if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680)) ; then
+              if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680 )) ; then
                   docker build . --file Dockerfile --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
               else
                   docker build . --file Dockerfile --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
@@ -129,8 +130,9 @@ jobs:
 
       - name: Build image
         run: |
+          # Builds before 680 had a different URL
           is_int_regex='^[0-9]+$'
-          if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680)) ; then
+          if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680 )) ; then
               docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
           else
               docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
