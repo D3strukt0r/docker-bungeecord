@@ -8,8 +8,11 @@ on:
     branches:
       - master
       - develop
+    paths:
+      - .github/workflows/ci-cd.yml
+      - 'docker/**'
+      - '**/Dockerfile'
 
-  # Run tests for any PRs.
   pull_request:
 
   workflow_dispatch:
