@@ -34,13 +34,12 @@ RUN set -eux; \
         echo 'source /etc/profile.d/bash_completion.sh'; \
         # <green> user@host <normal> : <blue> dir <normal> $#
         echo 'export PS1="🐳 \e[38;5;10m\u@\h\e[0m:\e[38;5;12m\w\e[0m\\$ "'; \
-    } >"$HOME/.bashrc"; \
-    \
-    # Download Bungeecord
-    curl -fsSL -o /opt/bungeecord.jar "${BUNGEECORD_URL}"
+    } >"$HOME/.bashrc"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3020
+ADD ${BUNGEECORD_URL} /opt/bungeecord.jar
 COPY docker/console.sh /usr/local/bin/console
 
 EXPOSE 25565
