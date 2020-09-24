@@ -4,6 +4,9 @@ services:
   bungeecord:
     build:
       context: .
+      cache_from:
+        - ${IMAGE_CACHE:-d3strukt0r/bungeecord}
+    image: ${IMAGE:-d3strukt0r/bungeecord}
     ports:
       - 25565:25577
     networks:

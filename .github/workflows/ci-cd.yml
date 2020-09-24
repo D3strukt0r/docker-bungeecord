@@ -100,7 +100,7 @@ jobs:
     needs: [create-matrix, test]
 
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    if: ( github.event_name == 'push' || github.event_name == 'workflow_dispatch' ) && github.repository == 'D3strukt0r/docker-bungeecord'
 
     strategy:
       fail-fast: false
@@ -109,8 +109,7 @@ jobs:
     name: Push BungeeCord ${{ matrix.bungeecord }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Set variables
         run: |
@@ -131,17 +130,14 @@ jobs:
       - name: Build image
         run: |
           # Builds before 680 had a different URL
-          is_int_regex='^[0-9]+$'
-          if [[ '${{ matrix.bungeecord }}' =~ $is_int_regex ]] && (( ${{ matrix.bungeecord }} < 680 )) ; then
-              docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
+          if [[ '${{ matrix.bungeecord }}' =~ ^[0-9]+$ ]] && (( ${{ matrix.bungeecord }} < 680 )) ; then
+              docker build . --file Dockerfile --tag "$IMAGE_ID:$VERSION" --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}" --build-arg "BUNGEECORD_FILE_URL=/artifact/proxy/target/BungeeCord.jar"
           else
-              docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
+              docker build . --file Dockerfile --tag "$IMAGE_ID:$VERSION" --build-arg "BUNGEECORD_JOB_ID=${{ matrix.bungeecord }}"
           fi
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push image to Docker Hub
-        run: |
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+        run: docker push "$IMAGE_ID:$VERSION"
